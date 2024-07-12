@@ -471,12 +471,9 @@ public class MandibleRecon extends ReconAppRoot {
    
    
    
-   
  public void createFibulaOptimizationTwo(double zOffset, double RDPOffset) throws IOException {
       
    
-      
-    
      
       RigidBody mandible = myMeshManager.getRigidBody("mandible");
       MeshBase mandibleMesh = mandible.getSurfaceMesh();
@@ -525,10 +522,10 @@ public class MandibleRecon extends ReconAppRoot {
       Vector3d newRDPvector = plateCurve.eval (arcLength+RDPOffset);
       Point3d newRDPposition = new  Point3d (newRDPvector.x, newRDPvector.y, newRDPvector.z);
       
-      rdpMarkers.get (1).setPosition (newRDPposition);
+      //rdpMarkers.get (1).setPosition (newRDPposition);
       
       RigidBody rdpframe = (RigidBody)findComponent ("models/Reconstruction/RDPLineFrames/1");
-      rdpframe.setPosition (newRDPposition);
+      //rdpframe.setPosition (newRDPposition);
       
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
@@ -597,6 +594,21 @@ public class MandibleRecon extends ReconAppRoot {
       System.out.println("Optimal Angles for Donor Segment 0: " + optimalAngle1);
       System.out.println("Optimal Angles for Donor Segment 1: " + optimalAngle2);
 
+      
+      meshBody1.setPose(originalPose1);
+      RigidTransform3d optimalRotation1 = new RigidTransform3d();
+      optimalRotation1.setRotation(new AxisAngle(0, 0, 1, Math.toRadians(optimalAngle1)));
+      RigidTransform3d optimalPose1 = new RigidTransform3d();
+      optimalPose1.mul(originalPose1, optimalRotation1);
+      meshBody1.setPose(optimalPose1);
+      
+      
+      meshBody2.setPose(originalPose2);
+      RigidTransform3d optimalRotation2 = new RigidTransform3d();
+      optimalRotation2.setRotation(new AxisAngle(0, 0, 1, Math.toRadians(optimalAngle2)));
+      RigidTransform3d optimalPose2 = new RigidTransform3d();
+      optimalPose2.mul(originalPose2, optimalRotation2);
+      meshBody2.setPose(optimalPose2);
   
    
       
@@ -653,29 +665,6 @@ public class MandibleRecon extends ReconAppRoot {
    
     
 
-   
-   
-   
-   
-   
-   
-  public void importFibulaOptimization () throws IOException {
-     
-     
-     File fileDir = new File (
-        PathFinder.getSourceRelativePath (this, "optimizationBTest"));
-     setWorkingFolder (fileDir);
-     myTaskFrame.importMandible (new File (fileDir, "mandible_with_cartilage.obj"));
-     myTaskFrame.importDonor (new File (fileDir, "fibula.obj"), true);
-     myTaskFrame.importResectionPlanes (
-        new File (fileDir, "resection_plane_initial.txt"),
-        MeshManager.PlaneFormat.ARTISYNTH);
-     myTaskFrame.importMandibleMarkers (
-        new File (fileDir, "mandible_markers.txt"),
-        MeshManager.MarkerFormat.ARTISYNTH, true);
- 
-     
-  }
   
   
   public void exportFemPlateTwo () {
@@ -871,6 +860,26 @@ public class MandibleRecon extends ReconAppRoot {
   
   
   
+ 
+  
+  
+ public void importFibulaOptimization () throws IOException {
+    
+    
+    File fileDir = new File (
+       PathFinder.getSourceRelativePath (this, "optimizationBTest"));
+    setWorkingFolder (fileDir);
+    myTaskFrame.importMandible (new File (fileDir, "mandible_with_cartilage.obj"));
+    myTaskFrame.importDonor (new File (fileDir, "fibula.obj"), true);
+    myTaskFrame.importResectionPlanes (
+       new File (fileDir, "resection_plane_initial.txt"),
+       MeshManager.PlaneFormat.ARTISYNTH);
+    myTaskFrame.importMandibleMarkers (
+       new File (fileDir, "mandible_markers.txt"),
+       MeshManager.MarkerFormat.ARTISYNTH, true);
+
+    
+ }
    
   
   
