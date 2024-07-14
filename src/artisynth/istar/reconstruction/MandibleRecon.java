@@ -449,19 +449,17 @@ public class MandibleRecon extends ReconAppRoot {
    
    public void importFibulaOptimizationTwo () throws IOException {
       
-      
       File fileDir = new File (
          PathFinder.getSourceRelativePath (this, "optimizationRBTest"));
       setWorkingFolder (fileDir);
       myTaskFrame.importMandible (new File (fileDir, "mandible_with_cartilage.obj"));
       myTaskFrame.importDonor (new File (fileDir, "fibula.obj"), true);
       myTaskFrame.importResectionPlanes (
-         new File (fileDir, "resection_plane_initial.txt"),
+         new File (fileDir, "resection_plane.txt"),
          MeshManager.PlaneFormat.ARTISYNTH);
       myTaskFrame.importMandibleMarkers (
          new File (fileDir, "mandible_markers.txt"),
-         MeshManager.MarkerFormat.ARTISYNTH, true);
-  
+         MeshManager.MarkerFormat.ARTISYNTH, true); 
       
    }
 
@@ -469,9 +467,7 @@ public class MandibleRecon extends ReconAppRoot {
 
    
    
-   
-   
- public void createFibulaOptimizationTwo(double zOffset, double RDPOffset) throws IOException {
+ public void createFibulaOptimizationTwo(double zOffset ) throws IOException {
       
    
      
@@ -495,6 +491,8 @@ public class MandibleRecon extends ReconAppRoot {
       
      
       
+      // creating parameter for RDP offset
+      /*
       PointList<FrameMarker> rdpMarkers = (PointList<FrameMarker>)myMech.get("RDPLinePoints");
     
       FrameMarker middleRDPPoint = rdpMarkers.get (1);
@@ -522,17 +520,19 @@ public class MandibleRecon extends ReconAppRoot {
       Vector3d newRDPvector = plateCurve.eval (arcLength+RDPOffset);
       Point3d newRDPposition = new  Point3d (newRDPvector.x, newRDPvector.y, newRDPvector.z);
       
-      //rdpMarkers.get (1).setPosition (newRDPposition);
+      rdpMarkers.get (1).setPosition (newRDPposition);
       
       RigidBody rdpframe = (RigidBody)findComponent ("models/Reconstruction/RDPLineFrames/1");
-      //rdpframe.setPosition (newRDPposition);
+      rdpframe.setPosition (newRDPposition);
+      */
+      
       
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
       myMeshManager.addDonorMarker (new Point3d (-10.740626, -2.5535717, 89.723129));
       myTaskFrame.mySegmentsPanel.findDonorSegments();
 
-
+      
       String meshBodyPath1 = "models/Reconstruction/donorSegments/0";
       DonorSegmentBody meshBody1 = (DonorSegmentBody) findComponent(meshBodyPath1);
 
@@ -872,7 +872,7 @@ public class MandibleRecon extends ReconAppRoot {
     myTaskFrame.importMandible (new File (fileDir, "mandible_with_cartilage.obj"));
     myTaskFrame.importDonor (new File (fileDir, "fibula.obj"), true);
     myTaskFrame.importResectionPlanes (
-       new File (fileDir, "resection_plane_initial.txt"),
+       new File (fileDir, "resection_plane.txt"),
        MeshManager.PlaneFormat.ARTISYNTH);
     myTaskFrame.importMandibleMarkers (
        new File (fileDir, "mandible_markers.txt"),
