@@ -609,9 +609,39 @@ public class MandibleRecon extends ReconAppRoot {
       RigidTransform3d optimalPose2 = new RigidTransform3d();
       optimalPose2.mul(originalPose2, optimalRotation2);
       meshBody2.setPose(optimalPose2);
-  
-   
       
+    
+      Point3d mesh2_position = meshBody2.getPosition ();
+      Point3d mesh2_position_initial = meshBody2.getPosition ();
+
+      double maxShiftSum = Double.NEGATIVE_INFINITY;
+      double optZShift = 0;
+      
+      for (double zShift=0; zShift<2 ; zShift+=.1) {
+         
+         mesh2_position.z = mesh2_position.z  - zShift;
+         meshBody2.setPosition (mesh2_position);
+      
+         
+         double[] ratio = myTaskFrame.computeBonyContact();
+
+
+         // Sum the bony contact ratios
+         double currentShiftSum = ratio[2] + ratio[3];
+         if (currentShiftSum > maxShiftSum) {
+            maxShiftSum = currentShiftSum;
+            optZShift = zShift;
+         }
+         
+         meshBody2.setPosition (mesh2_position_initial);
+         
+      }
+         
+      mesh2_position_initial.z = mesh2_position_initial.z  - optZShift;
+      meshBody2.setPosition (mesh2_position_initial);
+      
+  
+
       myTaskFrame.mySegmentsPanel.createReconstruction ();
       myTaskFrame.myPlatePanel.createPlateFem ();
      
