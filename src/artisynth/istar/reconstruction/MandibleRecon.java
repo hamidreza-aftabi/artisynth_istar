@@ -546,8 +546,8 @@ public class MandibleRecon extends ReconAppRoot {
       double optimalAngle1 = 0;
       double optimalAngle2 = 0;
 
-      for (double angleDegrees1 = -15; angleDegrees1 < 15; angleDegrees1 += 1) { // Adjust step size as needed
-          for (double angleDegrees2 = -15; angleDegrees2 < 15; angleDegrees2 += 1) { // Second loop for brute force search
+      for (double angleDegrees1 = -10; angleDegrees1 < 10; angleDegrees1 += 1) { // Adjust step size as needed
+          for (double angleDegrees2 = -10; angleDegrees2 < 10; angleDegrees2 += 1) { // Second loop for brute force search
               // Create the local rotation transform for the first donor segment
               RigidTransform3d localRotation1 = new RigidTransform3d();
               double angleRadians1 = Math.toRadians(angleDegrees1);
@@ -611,32 +611,41 @@ public class MandibleRecon extends ReconAppRoot {
       meshBody2.setPose(optimalPose2);
       
     
-      Point3d mesh2_position = meshBody2.getPosition ();
-      Point3d mesh2_position_initial = meshBody2.getPosition ();
+      Point3d mesh2_position_initial = new Point3d(meshBody2.getPosition());
+      Point3d mesh2_position = new Point3d(mesh2_position_initial);
 
-      double maxShiftSum = Double.NEGATIVE_INFINITY;
+      double maxShiftSum = 0;
       double optZShift = 0;
+      double currentShiftSum = 0;
+      double[] ratio;
       
-      for (double zShift=0; zShift<2 ; zShift+=.1) {
-         
-         mesh2_position.z = mesh2_position.z  - zShift;
-         meshBody2.setPosition (mesh2_position);
       
-         
-         double[] ratio = myTaskFrame.computeBonyContact();
+      for (double zShift = 0; zShift < 2; zShift += 0.1) {
+        
+         // Reset mesh2_position to the initial position at the start of each loop iteration
+         mesh2_position.set(mesh2_position_initial);
 
+         // Apply the zShift
+         mesh2_position.z -= zShift;
+         meshBody2.setPosition(mesh2_position);
+         
+         ratio = myTaskFrame.computeBonyContact();
 
          // Sum the bony contact ratios
-         double currentShiftSum = ratio[2] + ratio[3];
+         currentShiftSum = ratio[2] + ratio[3];
+         
          if (currentShiftSum > maxShiftSum) {
-            maxShiftSum = currentShiftSum;
-            optZShift = zShift;
+             maxShiftSum = currentShiftSum;
+             optZShift = zShift;
          }
          
-         meshBody2.setPosition (mesh2_position_initial);
-         
-      }
-         
+     }
+
+     
+
+      System.out.println("Optimal zshift for Donor Segment 1: " + optZShift);
+
+      
       mesh2_position_initial.z = mesh2_position_initial.z  - optZShift;
       meshBody2.setPosition (mesh2_position_initial);
       
