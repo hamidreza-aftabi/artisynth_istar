@@ -3,7 +3,10 @@ package artisynth.istar.reconstruction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
+import artisynth.core.femmodels.FemElement3d;
+import artisynth.core.femmodels.FemElement3dList;
 import artisynth.core.femmodels.FemModel.SurfaceRender;
 import artisynth.core.femmodels.FemModel3d;
 import artisynth.core.femmodels.FemNode3d;
@@ -709,6 +712,8 @@ public class PlateBuilder extends WorkerComponentBase {
       // Find the centers of each vertical FEM edge facing the mandible.
       int numElems = fem.numElements();
       ArrayList<Point3d> points = new ArrayList<>();
+
+      
       for (int i=0; i<=numElems; i++) {
          Point3d pnt = new Point3d();
          // since we know the exact structure of the FEM, we know that the
@@ -719,7 +724,10 @@ public class PlateBuilder extends WorkerComponentBase {
          pnt.scale (0.5);
          points.add (pnt);
       }
+      
+
       PointList<FrameMarker> rdpMarkers = (PointList<FrameMarker>)myMech.get("RDPLinePoints");
+      FemElement3dList<FemElement3d> elements = fem.getElements();
 
       // Create an ArrayList to hold the positions of the FrameMarkers
       
@@ -796,12 +804,48 @@ public class PlateBuilder extends WorkerComponentBase {
             
             //updated
             if (i==0) {
-               TSW.p.set (screwLineRDP0.eval(d, lastIdx));
+               
+               Vector3d pos0 = screwLineRDP0.eval(d, lastIdx);
 
+               Point3d closestPoint0 = null;
+               double closestDistance0 = Double.MAX_VALUE;
+
+               for (FemElement3d element0 : elements) {
+                   Point3d centroid0 = new Point3d();
+                   element0.computeCentroid(centroid0);
+                   double distance0 = centroid0.distance(pos0);
+                   if (distance0 < closestDistance0) {
+                       closestDistance0 = distance0;
+                       closestPoint0 = centroid0;
+                   }
+               }
+               
+               
+               TSW.p.set (new Vector3d (closestPoint0.x, closestPoint0.y, closestPoint0.z));
+
+               
+       
             }
             
             if (i==1) {
-               TSW.p.set (screwLineRDP1.eval(d, lastIdx));
+               
+               Vector3d pos1 =  screwLineRDP1.eval(d, lastIdx);
+
+               Point3d closestPoint1 = null;
+               double closestDistance1 = Double.MAX_VALUE;
+
+               for (FemElement3d element1 : elements) {
+                   Point3d centroid1 = new Point3d();
+                   element1.computeCentroid(centroid1);
+                   double distance1 = centroid1.distance(pos1);
+                   if (distance1 < closestDistance1) {
+                       closestDistance1 = distance1;
+                       closestPoint1 = centroid1;
+                   }
+               }
+               
+               
+               TSW.p.set (new Vector3d (closestPoint1.x, closestPoint1.y, closestPoint1.z));
 
             }
 
