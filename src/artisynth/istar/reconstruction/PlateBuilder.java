@@ -69,7 +69,7 @@ public class PlateBuilder extends WorkerComponentBase {
    public static double DEFAULT_PLATE_WIDTH = 7;
    protected double myPlateWidth = DEFAULT_PLATE_WIDTH;
 
-   public static double DEFAULT_SPRING_STIFFNESS = 1;
+   public static double DEFAULT_SPRING_STIFFNESS = 10;
    protected double mySpringStiffness = DEFAULT_SPRING_STIFFNESS;
  
    public static int DEFAULT_NUM_SCREWS = 1;
@@ -84,7 +84,7 @@ public class PlateBuilder extends WorkerComponentBase {
    public static double DEFAULT_SCREW_RADIUS = 1.3;
    protected double myScrewRadius = DEFAULT_SCREW_RADIUS;
 
-   public static double DEFAULT_SCREW_LENGTH = 10;
+   public static double DEFAULT_SCREW_LENGTH = 15;
    protected double myScrewLength = DEFAULT_SCREW_LENGTH;
 
    public static int DEFAULT_NUM_SCREW_SIDES = 10;
@@ -823,8 +823,7 @@ public class PlateBuilder extends WorkerComponentBase {
                
                TSW.p.set (new Vector3d (closestPoint0.x, closestPoint0.y, closestPoint0.z));
 
-               
-       
+
             }
             
             if (i==1) {

@@ -546,8 +546,8 @@ public class MandibleRecon extends ReconAppRoot {
       double optimalAngle1 = 0;
       double optimalAngle2 = 0;
 
-      for (double angleDegrees1 = -10; angleDegrees1 < 10; angleDegrees1 += 1) { // Adjust step size as needed
-          for (double angleDegrees2 = -10; angleDegrees2 < 10; angleDegrees2 += 1) { // Second loop for brute force search
+      for (double angleDegrees1 = 10; angleDegrees1 < 45; angleDegrees1 += 1) { // Adjust step size as needed
+          for (double angleDegrees2 = 10; angleDegrees2 < 45; angleDegrees2 += 1) { // Second loop for brute force search
               // Create the local rotation transform for the first donor segment
               RigidTransform3d localRotation1 = new RigidTransform3d();
               double angleRadians1 = Math.toRadians(angleDegrees1);
@@ -573,7 +573,7 @@ public class MandibleRecon extends ReconAppRoot {
               double[] ratio = myTaskFrame.computeBonyContact();
 
               // Sum the bony contact ratios
-              double currentSum = ratio[1] + ratio[2] + ratio[3] + ratio[4];
+              double currentSum =  ratio[0] + ratio[1] + ratio[2] + ratio[3] + ratio[4] + ratio[5];
               if (currentSum > maxSum) {
                   maxSum = currentSum;
                   optimalAngle1 = angleDegrees1;
@@ -620,7 +620,7 @@ public class MandibleRecon extends ReconAppRoot {
       double[] ratio;
       
       
-      for (double zShift = 0; zShift < 2; zShift += 0.1) {
+      for (double zShift = -2; zShift < 2; zShift += 0.1) {
         
          // Reset mesh2_position to the initial position at the start of each loop iteration
          mesh2_position.set(mesh2_position_initial);
@@ -963,7 +963,7 @@ public class MandibleRecon extends ReconAppRoot {
       double maxSum = Double.NEGATIVE_INFINITY;
       double optimalAngle = 0;
 
-      for (double angleDegrees = -15; angleDegrees < 15; angleDegrees += 1) { // Adjust step size as needed
+      for (double angleDegrees = -15; angleDegrees <15; angleDegrees += 1) { // Adjust step size as needed
         
 
           // Create the local rotation transform
