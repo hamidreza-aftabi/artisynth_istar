@@ -963,7 +963,7 @@ public class MandibleRecon extends ReconAppRoot {
       double maxSum = Double.NEGATIVE_INFINITY;
       double optimalAngle = 0;
 
-      for (double angleDegrees = -15; angleDegrees <15; angleDegrees += 1) { // Adjust step size as needed
+      for (double angleDegrees = -15; angleDegrees <25; angleDegrees += 1) { // Adjust step size as needed
         
 
           // Create the local rotation transform
