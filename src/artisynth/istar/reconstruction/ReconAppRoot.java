@@ -91,7 +91,7 @@ public class ReconAppRoot extends RootModel {
    protected static double DEFAULT_CUT_PLANE_WIDTH = 100;
    protected double myCutPlaneWidth = DEFAULT_CUT_PLANE_WIDTH;
 
-   protected static int DEFAULT_PLANE_RESOLUTION = 50;
+   protected static int DEFAULT_PLANE_RESOLUTION = 1;
    protected int myPlaneResolution = DEFAULT_PLANE_RESOLUTION;
 
    static double DEFAULT_DONOR_SET_BACK = 0;
