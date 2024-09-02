@@ -88,7 +88,7 @@ public class ReconAppRoot extends RootModel {
    protected double myRenderPlaneWidth = DEFAULT_RENDER_PLANE_WIDTH;
    protected PropertyMode myRenderPlaneWidthMode = PropertyMode.Inherited;
 
-   protected static double DEFAULT_CUT_PLANE_WIDTH = 100;
+   protected static double DEFAULT_CUT_PLANE_WIDTH = 95;
    protected double myCutPlaneWidth = DEFAULT_CUT_PLANE_WIDTH;
 
    protected static int DEFAULT_PLANE_RESOLUTION = 1;

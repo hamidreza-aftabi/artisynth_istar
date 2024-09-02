@@ -479,9 +479,15 @@ public class MandibleRecon extends ReconAppRoot {
       for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
       {
       
-         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
-         mkr.setPosition (closestVertex);
+         //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+         //mkr.setPosition (closestVertex);
          //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
+         
+         Point3d loc = new Point3d();
+         loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+         loc.z= loc.z+zOffset;
+         mkr.setLocation (loc);
+         
          
       }
     
@@ -529,7 +535,7 @@ public class MandibleRecon extends ReconAppRoot {
       
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
-      myMeshManager.addDonorMarker (new Point3d (-10.740626, -2.5535717, 89.723129));
+      myMeshManager.addDonorMarker (new Point3d (-9.9232046, -2.575484, 82.477632));
       myTaskFrame.mySegmentsPanel.findDonorSegments();
 
       
@@ -899,7 +905,24 @@ public class MandibleRecon extends ReconAppRoot {
   
   
   
- 
+  public void importFibulaOptimizationS () throws IOException {
+     
+     
+     File fileDir = new File (
+        PathFinder.getSourceRelativePath (this, "optimizationSTest"));
+     setWorkingFolder (fileDir);
+     myTaskFrame.importMandible (new File (fileDir, "mandible_with_cartilage.obj"));
+     myTaskFrame.importDonor (new File (fileDir, "fibula.obj"), true);
+     myTaskFrame.importResectionPlanes (
+        new File (fileDir, "resection_plane.txt"),
+        MeshManager.PlaneFormat.ARTISYNTH);
+     myTaskFrame.importMandibleMarkers (
+        new File (fileDir, "mandible_markers.txt"),
+        MeshManager.MarkerFormat.ARTISYNTH, true);
+
+     
+  }
+    
   
   
  public void importFibulaOptimization () throws IOException {
@@ -921,8 +944,211 @@ public class MandibleRecon extends ReconAppRoot {
  }
    
   
+ 
+ public void createFibulaOptimization(double offset) throws IOException {
+    
+    double zOffset = offset;
+    
   
-   public void createFibulaOptimization(double offset) throws IOException {
+   
+    RigidBody mandible = myMeshManager.getRigidBody("mandible");
+    MeshBase mandibleMesh = mandible.getSurfaceMesh();
+    
+  
+    
+    for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
+    {
+    
+       //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+       //mkr.setPosition (closestVertex);
+       //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
+       
+       Point3d loc = new Point3d();
+       loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+       loc.z= loc.z+zOffset;
+       mkr.setLocation (loc);
+       
+       
+    }
+  
+    
+    myTaskFrame.mySegmentsPanel.createPlateCurve();
+    myTaskFrame.mySegmentsPanel.createRDPLine();
+    myTaskFrame.myMeshesPanel.clipMandible();
+    myTaskFrame.myMeshesPanel.clipDonor();
+    myMeshManager.addDonorMarker (
+       new Point3d (-9.9232046, -2.575484, 82.477632));
+    myTaskFrame.mySegmentsPanel.findDonorSegments();
+
+    
+
+    String meshBodyPath = "models/Reconstruction/donorSegments/0";
+    DonorSegmentBody meshBody = (DonorSegmentBody) findComponent(meshBodyPath);
+
+
+   
+    RigidTransform3d originalPose = new RigidTransform3d(meshBody.getPose());
+
+    double maxSum = Double.NEGATIVE_INFINITY;
+    double optimalAngle = 0;
+
+    for (double angleDegrees = -30; angleDegrees <90; angleDegrees += 1) { // Adjust step size as needed
+      
+
+        // Create the local rotation transform
+        RigidTransform3d localRotation = new RigidTransform3d();
+        double angleRadians = Math.toRadians(angleDegrees);
+        localRotation.setRotation(new AxisAngle(0, 0, 1, angleRadians)); // Rotate around Z-axis
+
+        // Apply the local rotation to the original pose
+        RigidTransform3d newPose = new RigidTransform3d();
+        newPose.mul(originalPose, localRotation);
+
+        // Apply the new pose to the mesh body
+        meshBody.setPose(newPose);
+
+        // Compute bony contact
+        double[] ratio = myTaskFrame.computeBonyContact();
+
+        // Check if the current sum is greater than the maximum found so far
+        double currentSum = ratio[1] + ratio[2];
+        if (currentSum > maxSum) {
+            maxSum = currentSum;
+            optimalAngle = angleDegrees;
+        }
+        
+        // Reset to the original pose
+        meshBody.setPose(originalPose);
+    }
+
+    
+    
+    // Apply the optimal rotation found
+    meshBody.setPose(originalPose);
+    RigidTransform3d optimalRotation = new RigidTransform3d();
+    optimalRotation.setRotation(new AxisAngle(0, 0, 1, Math.toRadians(optimalAngle)));
+    RigidTransform3d optimalPose = new RigidTransform3d();
+    optimalPose.mul(originalPose, optimalRotation);
+    meshBody.setPose(optimalPose);
+
+    System.out.println("Optimal rotation angle: " + optimalAngle + " degrees with max sum: " + maxSum);
+    
+    myTaskFrame.mySegmentsPanel.createReconstruction ();
+    myTaskFrame.myPlatePanel.createPlateFem ();
+ 
+    
+    //myTaskFrame.myPlatePanel.createScrews ();
+    
+
+    /*      
+    // Create the local rotation transform
+    RigidTransform3d localRotation = new RigidTransform3d();
+    double angleDegrees = 90; // Rotate 45 degrees as an example
+    double angleRadians = Math.toRadians(angleDegrees);
+    localRotation.setRotation(new AxisAngle(0, 0, 1, angleRadians)); // Rotate around Z-axis
+
+    // Convert the local rotation to world coordinates
+    AffineTransform3d worldTransform = new AffineTransform3d();
+    worldTransform.mul(localTransform, localRotation);
+    worldTransform.mulInverseRight(worldTransform, localTransform);
+
+    // Apply the transformation to the mesh
+    //mesh.transform(worldTransform);
+    meshBody.transformGeometry (worldTransform);
+    //mesh.transform (worldTransform);
+
+    System.out.println("Successfully rotated the mesh around its local axis by " + angleDegrees + " degrees.");
+
+
+    double[] ratio = myTaskFrame.computeBonyContact();
+    
+    System.out.println("Bony Contact" + ratio[1]+ ratio[2]);
+    */
+    
+
+    
+    /*
+    double optimalAngle = findOptimalRotation(donorSegment, mandibleR);
+    System.out.println("Optimal Rotation Angle (degrees): " + optimalAngle);
+    
+    System.out.println("Optimal Rotation Angle (degrees): " + optimalAngle);
+
+    // Apply the optimal rotation to the donor segment
+    rotateDonorSegment(donorSegment, optimalAngle);
+
+    // Print the applied rotation for verification
+    System.out.println("Applied Rotation: " + donorSegment.getPose());
+    */
+    
+    
+    
+    /*
+    myTaskFrame.mySegmentsPanel.createReconstruction();
+
+    Point3d p0 = new Point3d (-17.118676, -27.972629, 2.2921666);
+    Point3d p1 = new Point3d (0.18963657, -42.16102, -2.6552247);
+    Point3d p2 = new Point3d (25.610483, -9.015806, 4.5762074);
+    OcclusalPlane pbody = myImplantsManager.createOcclusalPlane (p1, p0, p2);
+
+    myMeshManager.addOcclusalPlane (pbody);
+    myTaskFrame.setOcclusalPlaneVisible (false);   
+
+
+    // add implants
+    RigidTransform3d TIW_0 = new RigidTransform3d (-41.1733, 5.91287, -4.66524);
+    TIW_0.R.setAxisAngle (0.15442, 0.17364, -0.97263, DTOR*70.71);
+    addImplant (TIW_0);
+
+    RigidTransform3d TIW_1 = new RigidTransform3d (-33.0932, -7.44589,-8.78361);
+    TIW_1.R.setAxisAngle (0.21129, 0.18573, -0.95962, DTOR*57.105);
+    addImplant (TIW_1);
+
+    RigidTransform3d TIW_2 = new RigidTransform3d (-26.737, -17.9732, -12.0284);
+    TIW_2.R.setAxisAngle (0.24725, 0.19312, -0.94951, DTOR*50.755);
+    addImplant (TIW_2);
+
+    RigidTransform3d TIW_3 = new RigidTransform3d (-17.3797, -25.5598,-15.3652);
+    TIW_3.R.setAxisAngle (0.29795, 0.20317, -0.93271, DTOR*43.783);
+    addImplant (TIW_3);
+    
+    myTaskFrame.myPlatePanel.createPlateFem ();
+    
+   
+    // mandible
+    RigidBody mandibleL = myMeshManager.getRigidBody("mandibleL");
+    RigidBody mandibleR = myMeshManager.getRigidBody("mandibleR");
+    PolygonalMesh mesh = mandibleL.getSurfaceMesh().clone();
+    mesh.addMesh (mandibleR.getSurfaceMesh(),true);
+    
+   
+    // export
+    File exportFileDir = new File (
+       PathFinder.getSourceRelativePath (this, "optimizationresult"));
+    setWorkingFolder (exportFileDir);
+    
+    File exportFile = new File(exportFileDir, "ResectedMandible.obj");   
+    
+    try {
+       mesh.write(exportFile);
+       System.out.println("Mesh exported successfully to: " + exportFile.getAbsolutePath());
+   } catch (IOException e) {
+       e.printStackTrace();
+   }
+   */
+    
+  
+ }
+ 
+ 
+
+   
+ 
+ 
+ 
+ 
+ //**************** NOT USED ***************************
+  
+   public void createFibulaOptimizationS(double offset) throws IOException {
       
       double zOffset = offset;
       
@@ -936,19 +1162,26 @@ public class MandibleRecon extends ReconAppRoot {
       for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
       {
       
-         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
-         mkr.setPosition (closestVertex);
+         //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+         //mkr.setPosition (closestVertex);
          //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
          
+         
+         Point3d loc = new Point3d();
+         loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+         loc.z= loc.z+zOffset;
+         mkr.setLocation (loc);
+         
+         
       }
-    
+      
       
       myTaskFrame.mySegmentsPanel.createPlateCurve();
       myTaskFrame.mySegmentsPanel.createRDPLine();
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
       myMeshManager.addDonorMarker (
-         new Point3d (-10.740626, -2.5535717, 89.723129));
+         new Point3d (-9.9232046, -2.575484, 82.477632));
       myTaskFrame.mySegmentsPanel.findDonorSegments();
 
       
@@ -962,9 +1195,17 @@ public class MandibleRecon extends ReconAppRoot {
 
       double maxSum = Double.NEGATIVE_INFINITY;
       double optimalAngle = 0;
+      double optYShift = 0;
 
-      for (double angleDegrees = -15; angleDegrees <25; angleDegrees += 1) { // Adjust step size as needed
-        
+
+      Point3d mesh_position_initial = new Point3d(meshBody.getPosition());
+      Point3d mesh_position = new Point3d(mesh_position_initial);
+
+ 
+  
+
+      for (double angleDegrees = -10; angleDegrees <100; angleDegrees += 1) { // Adjust step size as needed
+         for (double yShift = -1; yShift < 1; yShift += 0.1) {
 
           // Create the local rotation transform
           RigidTransform3d localRotation = new RigidTransform3d();
@@ -977,7 +1218,12 @@ public class MandibleRecon extends ReconAppRoot {
 
           // Apply the new pose to the mesh body
           meshBody.setPose(newPose);
-
+          
+          
+          mesh_position.y -= yShift;
+          meshBody.setPosition(mesh_position);
+          
+          
           // Compute bony contact
           double[] ratio = myTaskFrame.computeBonyContact();
 
@@ -986,10 +1232,16 @@ public class MandibleRecon extends ReconAppRoot {
           if (currentSum > maxSum) {
               maxSum = currentSum;
               optimalAngle = angleDegrees;
+              optYShift = yShift;
           }
           
           // Reset to the original pose
           meshBody.setPose(originalPose);
+          mesh_position.set(mesh_position_initial);
+
+         }
+         meshBody.setPose(originalPose);
+         mesh_position.set(mesh_position_initial);
       }
 
       
@@ -1004,109 +1256,18 @@ public class MandibleRecon extends ReconAppRoot {
 
       System.out.println("Optimal rotation angle: " + optimalAngle + " degrees with max sum: " + maxSum);
       
+      
+      mesh_position_initial.y = mesh_position_initial.y  - optYShift;
+      meshBody.setPosition (mesh_position_initial);
+      
+      
+      System.out.println("Optimal Yshift for Donor Segment 1: " + optYShift);
+
+      
       myTaskFrame.mySegmentsPanel.createReconstruction ();
       myTaskFrame.myPlatePanel.createPlateFem ();
    
-      
-      //myTaskFrame.myPlatePanel.createScrews ();
-      
- 
-      /*      
-      // Create the local rotation transform
-      RigidTransform3d localRotation = new RigidTransform3d();
-      double angleDegrees = 90; // Rotate 45 degrees as an example
-      double angleRadians = Math.toRadians(angleDegrees);
-      localRotation.setRotation(new AxisAngle(0, 0, 1, angleRadians)); // Rotate around Z-axis
 
-      // Convert the local rotation to world coordinates
-      AffineTransform3d worldTransform = new AffineTransform3d();
-      worldTransform.mul(localTransform, localRotation);
-      worldTransform.mulInverseRight(worldTransform, localTransform);
-
-      // Apply the transformation to the mesh
-      //mesh.transform(worldTransform);
-      meshBody.transformGeometry (worldTransform);
-      //mesh.transform (worldTransform);
-
-      System.out.println("Successfully rotated the mesh around its local axis by " + angleDegrees + " degrees.");
- 
- 
-      double[] ratio = myTaskFrame.computeBonyContact();
-      
-      System.out.println("Bony Contact" + ratio[1]+ ratio[2]);
-      */
-      
-
-      
-      /*
-      double optimalAngle = findOptimalRotation(donorSegment, mandibleR);
-      System.out.println("Optimal Rotation Angle (degrees): " + optimalAngle);
-      
-      System.out.println("Optimal Rotation Angle (degrees): " + optimalAngle);
-
-      // Apply the optimal rotation to the donor segment
-      rotateDonorSegment(donorSegment, optimalAngle);
-
-      // Print the applied rotation for verification
-      System.out.println("Applied Rotation: " + donorSegment.getPose());
-      */
-      
-      
-      
-      /*
-      myTaskFrame.mySegmentsPanel.createReconstruction();
-
-      Point3d p0 = new Point3d (-17.118676, -27.972629, 2.2921666);
-      Point3d p1 = new Point3d (0.18963657, -42.16102, -2.6552247);
-      Point3d p2 = new Point3d (25.610483, -9.015806, 4.5762074);
-      OcclusalPlane pbody = myImplantsManager.createOcclusalPlane (p1, p0, p2);
-
-      myMeshManager.addOcclusalPlane (pbody);
-      myTaskFrame.setOcclusalPlaneVisible (false);   
-
-
-      // add implants
-      RigidTransform3d TIW_0 = new RigidTransform3d (-41.1733, 5.91287, -4.66524);
-      TIW_0.R.setAxisAngle (0.15442, 0.17364, -0.97263, DTOR*70.71);
-      addImplant (TIW_0);
-
-      RigidTransform3d TIW_1 = new RigidTransform3d (-33.0932, -7.44589,-8.78361);
-      TIW_1.R.setAxisAngle (0.21129, 0.18573, -0.95962, DTOR*57.105);
-      addImplant (TIW_1);
-
-      RigidTransform3d TIW_2 = new RigidTransform3d (-26.737, -17.9732, -12.0284);
-      TIW_2.R.setAxisAngle (0.24725, 0.19312, -0.94951, DTOR*50.755);
-      addImplant (TIW_2);
-
-      RigidTransform3d TIW_3 = new RigidTransform3d (-17.3797, -25.5598,-15.3652);
-      TIW_3.R.setAxisAngle (0.29795, 0.20317, -0.93271, DTOR*43.783);
-      addImplant (TIW_3);
-      
-      myTaskFrame.myPlatePanel.createPlateFem ();
-      
-     
-      // mandible
-      RigidBody mandibleL = myMeshManager.getRigidBody("mandibleL");
-      RigidBody mandibleR = myMeshManager.getRigidBody("mandibleR");
-      PolygonalMesh mesh = mandibleL.getSurfaceMesh().clone();
-      mesh.addMesh (mandibleR.getSurfaceMesh(),true);
-      
-     
-      // export
-      File exportFileDir = new File (
-         PathFinder.getSourceRelativePath (this, "optimizationresult"));
-      setWorkingFolder (exportFileDir);
-      
-      File exportFile = new File(exportFileDir, "ResectedMandible.obj");   
-      
-      try {
-         mesh.write(exportFile);
-         System.out.println("Mesh exported successfully to: " + exportFile.getAbsolutePath());
-     } catch (IOException e) {
-         e.printStackTrace();
-     }
-     */
-      
     
    }
    
