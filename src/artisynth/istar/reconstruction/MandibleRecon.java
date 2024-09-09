@@ -479,14 +479,14 @@ public class MandibleRecon extends ReconAppRoot {
       for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
       {
       
-         //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
-         //mkr.setPosition (closestVertex);
-         //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
+         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+         mkr.setPosition (closestVertex);
+         System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
          
-         Point3d loc = new Point3d();
-         loc.inverseTransform (mandible.getPose(), mkr.getPosition());
-         loc.z= loc.z+zOffset;
-         mkr.setLocation (loc);
+         //Point3d loc = new Point3d();
+         //loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+         //loc.z= loc.z+zOffset;
+         //mkr.setLocation (loc);
          
          
       }
@@ -535,7 +535,7 @@ public class MandibleRecon extends ReconAppRoot {
       
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
-      myMeshManager.addDonorMarker (new Point3d (-9.9232046, -2.575484, 82.477632));
+      myMeshManager.addDonorMarker (new Point3d (-9.9232046, -2.575484, 88));
       myTaskFrame.mySegmentsPanel.findDonorSegments();
 
       
@@ -959,14 +959,14 @@ public class MandibleRecon extends ReconAppRoot {
     for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
     {
     
-       //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
-       //mkr.setPosition (closestVertex);
-       //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
+       Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+       mkr.setPosition (closestVertex);
+       System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
        
-       Point3d loc = new Point3d();
-       loc.inverseTransform (mandible.getPose(), mkr.getPosition());
-       loc.z= loc.z+zOffset;
-       mkr.setLocation (loc);
+       //Point3d loc = new Point3d();
+      //loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+       //loc.z= loc.z+zOffset;
+       //mkr.setLocation (loc);
        
        
     }
@@ -977,7 +977,7 @@ public class MandibleRecon extends ReconAppRoot {
     myTaskFrame.myMeshesPanel.clipMandible();
     myTaskFrame.myMeshesPanel.clipDonor();
     myMeshManager.addDonorMarker (
-       new Point3d (-9.9232046, -2.575484, 82.477632));
+       new Point3d (-9.9232046, -2.575484, 88));
     myTaskFrame.mySegmentsPanel.findDonorSegments();
 
     
@@ -1162,15 +1162,15 @@ public class MandibleRecon extends ReconAppRoot {
       for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
       {
       
-         //Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
-         //mkr.setPosition (closestVertex);
-         //System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
+         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+         mkr.setPosition (closestVertex);
+         System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
          
          
-         Point3d loc = new Point3d();
-         loc.inverseTransform (mandible.getPose(), mkr.getPosition());
-         loc.z= loc.z+zOffset;
-         mkr.setLocation (loc);
+         //Point3d loc = new Point3d();
+         //loc.inverseTransform (mandible.getPose(), mkr.getPosition());
+         //loc.z= loc.z+zOffset;
+         //mkr.setLocation (loc);
          
          
       }
@@ -1181,7 +1181,7 @@ public class MandibleRecon extends ReconAppRoot {
       myTaskFrame.myMeshesPanel.clipMandible();
       myTaskFrame.myMeshesPanel.clipDonor();
       myMeshManager.addDonorMarker (
-         new Point3d (-9.9232046, -2.575484, 82.477632));
+         new Point3d (-9.9232046, -2.575484, 88));
       myTaskFrame.mySegmentsPanel.findDonorSegments();
 
       

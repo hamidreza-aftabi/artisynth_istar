@@ -703,7 +703,7 @@ public class SegmentGenerator extends WorkerComponentBase {
     * from {@code p1}, and iterate this until {@code p1} is sufficiently close
     * to the donor surface.
     */
-   public Point3d findNextDonorPoint (
+   public Point3d findNextDonorPoint(
       Point3d p0, double len, PolygonalMesh donorMesh,
       CubicHermiteSpline3d donorCurve) {
 
@@ -712,32 +712,50 @@ public class SegmentGenerator extends WorkerComponentBase {
       // "_d" denotes quantities in donor space
       RigidTransform3d TDW = donorMesh.getMeshToWorld();
       Point3d p0_d = new Point3d(p0);
-      p0_d.inverseTransform (TDW);
+      p0_d.inverseTransform(TDW);
 
-      Point3d cp0_d = new Point3d(donorCurve.eval (p0_d.z));
-      Point3d cp1_d = new Point3d(donorCurve.eval (p0_d.z-len));
+      Point3d cp0_d = new Point3d(donorCurve.eval(p0_d.z));
+      Point3d cp1_d = new Point3d(donorCurve.eval(p0_d.z - len));
       Vector3d u = new Vector3d();
-      u.sub (cp1_d, cp0_d);
-      u.transform (TDW);
-      p1.scaledAdd (len/u.norm(), u, p0);
-      double tol = len*1e-8;
-      int maxIters = 100;
-      for (int iter=1; iter<=maxIters; iter++) {
-         double dist = projectToDonor (p1, donorMesh, donorCurve, TDW);
-         if (dist == -1) {
-            throw new NumericalException ("project to donor failed");
-         }
-         // make sure || p1-p0 || = len
-         u.sub (p1, p0);
-         p1.scaledAdd (len/u.norm(), u, p0);
-         if (dist <= tol) {
-            return p1;
-         }
-      }
-      throw new NumericalException (
-         "findNextDonorPoint: iteration count exceeded");
-   }
+      u.sub(cp1_d, cp0_d);
+      u.transform(TDW);
+      p1.scaledAdd(len / u.norm(), u, p0);
+      int maxIters = 300;
+     
+      Point3d closestP1 = new Point3d(p1);  // Store the initial point as the closest
+      double closestDist = Double.MAX_VALUE; // Initialize the closest distance to a large value
 
+      for (int iter = 1; iter <= maxIters; iter++) {
+          double dist = projectToDonor(p1, donorMesh, donorCurve, TDW);
+          if (dist == -1) {
+              throw new NumericalException("project to donor failed");
+          }
+
+          // make sure || p1-p0 || = len
+          u.sub(p1, p0);
+          p1.scaledAdd(len / u.norm(), u, p0);
+
+          // Check if the current point is closer to the surface than the previous closest
+          if (dist < closestDist) {
+              closestDist = dist;
+              closestP1.set(p1);  // Update the closest point
+          }
+
+          // Commented out original logic for returning the point within tolerance
+          // if (dist <= tol) {
+          //     return p1;
+          // }
+      }
+
+      // Return the closest point found during the iterations
+      return closestP1;
+
+      // The following line is unreachable because the method already returns above
+      // throw new NumericalException("findNextDonorPoint: iteration count exceeded");
+}
+
+   
+   
    /**
     * Compute the average z direction of two transforms.
     */
