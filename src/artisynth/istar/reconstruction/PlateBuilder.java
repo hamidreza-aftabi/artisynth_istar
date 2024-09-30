@@ -740,7 +740,6 @@ public class PlateBuilder extends WorkerComponentBase {
       double[] screwLineLenRDP = {0,0};
       
 
-
       rdpPoints0.add(rdpMarkers.get (0).getPosition());
       rdpPoints0.add(rdpMarkers.get (1).getPosition());
 
@@ -821,7 +820,15 @@ public class PlateBuilder extends WorkerComponentBase {
                }
                
                
-               TSW.p.set (new Vector3d (closestPoint0.x, closestPoint0.y, closestPoint0.z));
+               //TSW.p.set (new Vector3d (closestPoint0.x, closestPoint0.y, closestPoint0.z));
+               //TSW.p.set (new Vector3d (pos0.x, pos0.y, pos0.z));
+               
+               //For B Defect 
+               //TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
+
+               
+               //For S Defect 
+               TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y - 10)/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
 
 
             }
@@ -844,23 +851,46 @@ public class PlateBuilder extends WorkerComponentBase {
                }
                
                
-               TSW.p.set (new Vector3d (closestPoint1.x, closestPoint1.y, closestPoint1.z));
+               //TSW.p.set (new Vector3d (closestPoint1.x, closestPoint1.y, closestPoint1.z));
+               //TSW.p.set (new Vector3d (pos1.x, pos1.y, pos1.z));
+          
+               TSW.p.set (new Vector3d ((rdpMarkers.get (1).getPosition().x + rdpMarkers.get (2).getPosition().x)/2 ,  (rdpMarkers.get (1).getPosition().y + rdpMarkers.get (2).getPosition().y)/2 , (rdpMarkers.get (1).getPosition().z + rdpMarkers.get (2).getPosition().z)/2 ));   
+
 
             }
 
+           
             d = screwLineLen/2;
 
             Vector3d zdir = screwLine.evalDx(d, lastIdx);
             zdir.normalize();
             zdir.negate();
-            // don't use lastIdx for normals because knots are different
+            System.out.println("Z direction: " + zdir.toString());
+
             Vector3d ydir = screwNormals.eval(d);
             ydir.normalize();
-            TSW.R.setYZDirections (ydir, zdir);
+            System.out.println("Y direction: " + ydir.toString());
+            
+            
+            //For S Defect 
+            Vector3d ydir1 = new Vector3d (0, -1, -.2);
+            Vector3d zdir1 = new Vector3d (0.9821693523530379, -0.1877767306047194, 0.00912484201597602);
+            
+
+            
+           // for B Defect
+           /*
+            Vector3d ydir1 = new Vector3d (-0.8831891864902558, -0.46611507271598007, -0.0520922245028643);
+            Vector3d zdir1 = new Vector3d ( 0.44297740956143233, -0.8709352841458438, -0.21270342133600262);
+           */
+            
+            
+            TSW.R.setYZDirections (ydir1, zdir1);
             FixedMeshBody body = new FixedMeshBody (baseMesh.clone());
             body.setPose (TSW);
             screws.add (body);
-         //}
+            
+         
       }
    }
 

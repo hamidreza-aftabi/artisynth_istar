@@ -467,22 +467,29 @@ public class MandibleRecon extends ReconAppRoot {
 
    
    
- public void createFibulaOptimizationTwo(double zOffset ) throws IOException {
+ public void createFibulaOptimizationTwo(double zOffset, double RDPOffset) throws IOException {
       
    
      
       RigidBody mandible = myMeshManager.getRigidBody("mandible");
       MeshBase mandibleMesh = mandible.getSurfaceMesh();
       
-  
+      int totalMarkers = 7; // Assuming you want the offset to reduce over 9 markers
+      int markerIndex = 0;  // Initialize a counter for the marker index
       
       for (FrameMarker mkr : myPlateBuilder.getPlateMarkers())
       {
       
-         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffset));
+         double reductionFactor = Math.exp(-markerIndex / (double) totalMarkers);  // Exponential decay
+         double zOffsetReduced = zOffset * reductionFactor;  // Apply the reduction to zOffset
+
+         Point3d closestVertex = findClosestVertex(mandibleMesh, new Point3d (mkr.getPosition ().x, mkr.getPosition ().y, mkr.getPosition ().z+zOffsetReduced));
          mkr.setPosition (closestVertex);
          System.out.println("Closest Vertex to the Arbitrary Point: " + closestVertex);
          
+       
+         markerIndex++;  // Increment the marker index
+
          //Point3d loc = new Point3d();
          //loc.inverseTransform (mandible.getPose(), mkr.getPosition());
          //loc.z= loc.z+zOffset;
@@ -495,10 +502,10 @@ public class MandibleRecon extends ReconAppRoot {
       myTaskFrame.mySegmentsPanel.createPlateCurve();
       myTaskFrame.mySegmentsPanel.createRDPLine();
       
-     
+    
       
       // creating parameter for RDP offset
-      /*
+      
       PointList<FrameMarker> rdpMarkers = (PointList<FrameMarker>)myMech.get("RDPLinePoints");
     
       FrameMarker middleRDPPoint = rdpMarkers.get (1);
@@ -523,14 +530,15 @@ public class MandibleRecon extends ReconAppRoot {
       System.out.println("Arc length to middleRDPPoint: " + arcLength);
       System.out.println("Total Plate Lenght" + plateLen);
 
-      Vector3d newRDPvector = plateCurve.eval (arcLength+RDPOffset);
+      Vector3d newRDPvector = plateCurve.eval (arcLength + RDPOffset);
       Point3d newRDPposition = new  Point3d (newRDPvector.x, newRDPvector.y, newRDPvector.z);
       
       rdpMarkers.get (1).setPosition (newRDPposition);
       
       RigidBody rdpframe = (RigidBody)findComponent ("models/Reconstruction/RDPLineFrames/1");
       rdpframe.setPosition (newRDPposition);
-      */
+      
+      
       
       
       myTaskFrame.myMeshesPanel.clipMandible();
