@@ -828,8 +828,11 @@ public class PlateBuilder extends WorkerComponentBase {
 
                
                //For S Defect 
-               TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y - 10)/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
+               //TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y - 10)/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
 
+               
+               //For RB Defect 
+               TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  ((rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )+3)/2 , ((rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)-7)/2 ));   
 
             }
             
@@ -854,7 +857,7 @@ public class PlateBuilder extends WorkerComponentBase {
                //TSW.p.set (new Vector3d (closestPoint1.x, closestPoint1.y, closestPoint1.z));
                //TSW.p.set (new Vector3d (pos1.x, pos1.y, pos1.z));
           
-               TSW.p.set (new Vector3d ((rdpMarkers.get (1).getPosition().x + rdpMarkers.get (2).getPosition().x)/2 ,  (rdpMarkers.get (1).getPosition().y + rdpMarkers.get (2).getPosition().y)/2 , (rdpMarkers.get (1).getPosition().z + rdpMarkers.get (2).getPosition().z)/2 ));   
+               TSW.p.set (new Vector3d ((rdpMarkers.get (1).getPosition().x + rdpMarkers.get (2).getPosition().x)/2 ,  ((rdpMarkers.get (1).getPosition().y + rdpMarkers.get (2).getPosition().y)+5)/2 , ((rdpMarkers.get (1).getPosition().z + rdpMarkers.get (2).getPosition().z)-10)/2 ));   
 
 
             }
@@ -873,9 +876,10 @@ public class PlateBuilder extends WorkerComponentBase {
             
             
             //For S Defect 
+           /*
             Vector3d ydir1 = new Vector3d (0, -1, -.2);
             Vector3d zdir1 = new Vector3d (0.9821693523530379, -0.1877767306047194, 0.00912484201597602);
-            
+            /*
 
             
            // for B Defect
@@ -885,6 +889,11 @@ public class PlateBuilder extends WorkerComponentBase {
            */
             
             
+           //For RB Defect 
+            Vector3d ydir1 = new Vector3d (-0.7241536065000872, -0.5816421632264681, 0.017010903582818565);
+            Vector3d zdir1 = new Vector3d ( 0.3011589228424498, -0.8178761688010696, -0.4902875438960889);
+  
+                 
             TSW.R.setYZDirections (ydir1, zdir1);
             FixedMeshBody body = new FixedMeshBody (baseMesh.clone());
             body.setPose (TSW);
