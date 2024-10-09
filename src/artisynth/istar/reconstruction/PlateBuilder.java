@@ -876,10 +876,10 @@ public class PlateBuilder extends WorkerComponentBase {
             
             
             //For S Defect 
-           /*
+            /*
             Vector3d ydir1 = new Vector3d (0, -1, -.2);
             Vector3d zdir1 = new Vector3d (0.9821693523530379, -0.1877767306047194, 0.00912484201597602);
-            /*
+            */
 
             
            // for B Defect
@@ -893,6 +893,7 @@ public class PlateBuilder extends WorkerComponentBase {
             Vector3d ydir1 = new Vector3d (-0.7241536065000872, -0.5816421632264681, 0.017010903582818565);
             Vector3d zdir1 = new Vector3d ( 0.3011589228424498, -0.8178761688010696, -0.4902875438960889);
   
+            
                  
             TSW.R.setYZDirections (ydir1, zdir1);
             FixedMeshBody body = new FixedMeshBody (baseMesh.clone());

@@ -560,8 +560,8 @@ public class MandibleRecon extends ReconAppRoot {
       double optimalAngle1 = 0;
       double optimalAngle2 = 0;
 
-      for (double angleDegrees1 = 10; angleDegrees1 < 45; angleDegrees1 += 1) { // Adjust step size as needed
-          for (double angleDegrees2 = 10; angleDegrees2 < 45; angleDegrees2 += 1) { // Second loop for brute force search
+      for (double angleDegrees1 = 10; angleDegrees1 < 40; angleDegrees1 += 1) { // Adjust step size as needed
+          for (double angleDegrees2 = 10; angleDegrees2 < 40; angleDegrees2 += 1) { // Second loop for brute force search
               // Create the local rotation transform for the first donor segment
               RigidTransform3d localRotation1 = new RigidTransform3d();
               double angleRadians1 = Math.toRadians(angleDegrees1);
