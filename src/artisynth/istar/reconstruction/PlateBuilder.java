@@ -824,7 +824,7 @@ public class PlateBuilder extends WorkerComponentBase {
                //TSW.p.set (new Vector3d (pos0.x, pos0.y, pos0.z));
                
                //For B Defect 
-               //TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
+               TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  (rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )/2 , (rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)/2 ));   
 
                
                //For S Defect 
@@ -832,7 +832,7 @@ public class PlateBuilder extends WorkerComponentBase {
 
                
                //For RB Defect 
-               TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  ((rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )+3)/2 , ((rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)-7)/2 ));   
+               //TSW.p.set (new Vector3d ((rdpMarkers.get (0).getPosition().x + rdpMarkers.get (1).getPosition().x)/2 ,  ((rdpMarkers.get (0).getPosition().y + rdpMarkers.get (1).getPosition().y )+3)/2 , ((rdpMarkers.get (0).getPosition().z + rdpMarkers.get (1).getPosition().z)-7)/2 ));   
 
             }
             
@@ -876,23 +876,23 @@ public class PlateBuilder extends WorkerComponentBase {
             
             
             //For S Defect 
-            /*
-            Vector3d ydir1 = new Vector3d (0, -1, -.2);
-            Vector3d zdir1 = new Vector3d (0.9821693523530379, -0.1877767306047194, 0.00912484201597602);
-            */
+            //Vector3d ydir1 = new Vector3d (0, -1, -.2);
+            //Vector3d zdir1 = new Vector3d (0.9821693523530379, -0.1877767306047194, 0.00912484201597602);
+            
 
             
            // for B Defect
-           /*
+           
             Vector3d ydir1 = new Vector3d (-0.8831891864902558, -0.46611507271598007, -0.0520922245028643);
             Vector3d zdir1 = new Vector3d ( 0.44297740956143233, -0.8709352841458438, -0.21270342133600262);
-           */
+           
             
             
            //For RB Defect 
-            Vector3d ydir1 = new Vector3d (-0.7241536065000872, -0.5816421632264681, 0.017010903582818565);
-            Vector3d zdir1 = new Vector3d ( 0.3011589228424498, -0.8178761688010696, -0.4902875438960889);
-  
+           
+           //Vector3d ydir1 = new Vector3d (-0.7241536065000872, -0.5816421632264681, 0.017010903582818565);
+           //Vector3d zdir1 = new Vector3d ( 0.3011589228424498, -0.8178761688010696, -0.4902875438960889);
+           
             
                  
             TSW.R.setYZDirections (ydir1, zdir1);
